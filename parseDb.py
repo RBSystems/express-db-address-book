@@ -65,7 +65,9 @@ with open(args.db, "rb") as binary_file:
                     host['ip'] = ip
                     hosts.append(host)
 
-with open('addressBook.xadr','a') as addressBook:
+fileName = args.db + "_addressBook.xadr"
+
+with open(fileName,'a') as addressBook:
     addressBook.write('[Entries]\n')
     addressBook.write('_AAASerial on COM1=usb\n')
     addressBook.write('_Generic Cresnet Device Override=_Serial on COM1:cresnet 03;device GenericCrensetDevice\n')
