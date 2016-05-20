@@ -10,82 +10,109 @@
 import sys
 import binascii
 import argparse
+import os
+from os import listdir
+from os.path import isfile, join
 import string
 import re
 
 parser = argparse.ArgumentParser(description='Process a Roomview Express DB')
 parser.add_argument('--db')
+parser.add_argument('--output')
 
 args = parser.parse_args()
 
+mypath = os.getcwd()
+
 hosts=[]
 
-with open(args.db, "rb") as binary_file:
-    # Read the whole file at once
-    data = binary_file.read()
-    a_data = binascii.rledecode_hqx(data)
-    for line in iter(a_data.splitlines()):
-        host = {}
-        if (line.find('10.') >= 0):
-            arr = re.split(' ',line)
-            for item in arr:
-                room = ""
-                bldg = ""
-                if (item.find('10.') >= 0):
-                    room = arr[arr.index(item) - 1]
-                    bldg = arr[arr.index(item) - 2]
-                    ip = ""
-                    roomType = ""
+files = []
 
-                    printable = set(string.printable)
+def removeDupes(l):
+    dedupe = l
+    return dedupe
 
-                    bldg = ''.join([i if ord(i) < 128 else ' ' for i in bldg])
-                    bldg = re.sub(' +',' ',bldg)
-                    innerArr = bldg.split(' ')
-                    bldg = innerArr[-1]
-                    bldg = filter(lambda x: x in printable, bldg)
+def dedupe(seq):
+    set = {}
+    map(set.__setitem__, seq, [])
+    return set.keys()
 
-                    item = re.sub("0.0.0.0"," ",item)
-                    innerarr = re.split(' ',item)
-                    for inneritem in innerarr:
-                        if (inneritem.find('10.') >= 0):
-                            inneritem = re.sub('HDMMC','HDMMC ',inneritem)
-                            inneritem = re.sub('HDTEC','HDTEC ',inneritem)
-                            inneritem = re.sub('.*ite','TECLite ',inneritem)
-                            innerItemSplit = inneritem.split(' ')
-                            for subElement in innerItemSplit:
-                                if (subElement.find('10.') >= 0):
-                                    ip = subElement
-                                else:
-                                    roomType = subElement
+entries = ['[Entries]','_AAASerial on COM1=usb','_Generic Cresnet Device Override=_Serial on COM1:cresnet 03;device GenericCrensetDevice','_Remote Console To CNet ID 03=_Serial on COM1:cresnet 03','_Serial on COM1=rs232 1,0,n,8,1,n,y','_USB=usb']
 
-                    host['bldg'] = bldg
-                    host['room'] = room
-                    host['roomType'] = roomType
-                    host['ip'] = ip
-                    hosts.append(host)
+entries2 = ['[Settings]','DefaultEntry=','[Comments]','_AAASerial on COM1=','_Generic Cresnet Device Override=','_Remote Console To CNet ID 03=','_Serial on COM1=','_USB=']
 
-fileName = args.db + "_addressBook.xadr"
+if args.db:
+    files.append(args.db)
+else:
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    for fName in onlyfiles:
+        if (fName.find(".rvd") > 0) and (fName.find("HD") > 0):
+            files.append(fName)
 
-with open(fileName,'a') as addressBook:
-    addressBook.write('[Entries]\n')
-    addressBook.write('_AAASerial on COM1=usb\n')
-    addressBook.write('_Generic Cresnet Device Override=_Serial on COM1:cresnet 03;device GenericCrensetDevice\n')
-    addressBook.write('_Remote Console To CNet ID 03=_Serial on COM1:cresnet 03\n')
-    addressBook.write('_Serial on COM1=rs232 1,0,n,8,1,n,y\n')
-    addressBook.write('_USB=usb\n')
-    for host in hosts:
-        addressBook.write(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=tcp " + host['ip'] + "\n")
+if args.output:
+    out = output
+else:
+    out = "ServiceCenterAddressBook.xadr"
 
-    addressBook.write('[Settings]\n')
-    addressBook.write('DefaultEntry=\n')
+for f in files:
+    with open(f, "rb") as binary_file:
+        # Read the whole file at once
+        data = binary_file.read()
+        a_data = binascii.rledecode_hqx(data)
+        for line in iter(a_data.splitlines()):
+            host = {}
+            if (line.find('10.') >= 0):
+                arr = re.split(' ',line)
+                for item in arr:
+                    room = ""
+                    bldg = ""
+                    if (item.find('10.') >= 0):
+                        room = arr[arr.index(item) - 1]
+                        bldg = arr[arr.index(item) - 2]
+                        ip = ""
+                        roomType = ""
 
-    addressBook.write('[Comments]\n')
-    addressBook.write('_AAASerial on COM1=\n')
-    addressBook.write('_Generic Cresnet Device Override=\n')
-    addressBook.write('_Remote Console To CNet ID 03=\n')
-    addressBook.write('_Serial on COM1=\n')
-    addressBook.write('_USB=\n')
+                        printable = set(string.printable)
 
-    for host in hosts:
-        addressBook.write(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=\n")
+                        bldg = ''.join([i if ord(i) < 128 else ' ' for i in bldg])
+                        bldg = re.sub(' +',' ',bldg)
+                        innerArr = bldg.split(' ')
+                        bldg = innerArr[-1]
+                        bldg = filter(lambda x: x in printable, bldg)
+
+                        item = re.sub("0.0.0.0"," ",item)
+                        innerarr = re.split(' ',item)
+                        for inneritem in innerarr:
+                            if (inneritem.find('10.') >= 0):
+                                inneritem = re.sub('HDMMC','HDMMC ',inneritem)
+                                inneritem = re.sub('HDTEC','HDTEC ',inneritem)
+                                inneritem = re.sub('.*ite','TECLite ',inneritem)
+                                innerItemSplit = inneritem.split(' ')
+                                for subElement in innerItemSplit:
+                                    if (subElement.find('10.') >= 0):
+                                        ip = subElement
+                                    else:
+                                        roomType = subElement
+
+                        host['bldg'] = bldg
+                        host['room'] = room
+                        host['roomType'] = roomType
+                        host['ip'] = ip
+                        hosts.append(host)
+
+#fileName = f + "_addressBook.xadr"
+for host in hosts:
+    entries.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=tcp " + host['ip'] + "")
+
+entries = removeDupes(entries)
+
+for host in hosts:
+    entries2.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=")
+
+entries2 = removeDupes(entries2)
+
+with open(out,'a') as addressBook:
+    for entry in entries:
+        addressBook.write(entry + '\n')
+    for entry in entries2:
+        addressBook.write(entry + '\n')
