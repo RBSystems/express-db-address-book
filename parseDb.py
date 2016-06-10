@@ -110,8 +110,9 @@ for host in hosts:
 
 entries = removeDupes(entries)
 entries.sort()
+entries_header.reverse()
 
-for header in entries_header.reverse():
+for header in entries_header:
     entries.insert(0,header)
 
 for host in hosts:
@@ -119,8 +120,10 @@ for host in hosts:
 
 entries2 = removeDupes(entries2)
 entries2.sort()
-for header in entries2_header.reverse():
-    entries2.insert(0,header)
+
+entries2_header.reverse()
+for header2 in entries2_header:
+    entries2.insert(0,header2)
 
 
 with open(out,'a') as addressBook:
