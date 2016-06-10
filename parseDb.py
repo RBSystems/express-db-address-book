@@ -66,23 +66,33 @@ for f in files:
         for line in iter(a_data.splitlines()):
             host = {}
             if (line.find('10.') >= 0):
+                print (line)
                 arr = re.split(' ',line)
+                print arr
                 for item in arr:
                     room = ""
                     bldg = ""
                     if (item.find('10.') >= 0):
-                        room = arr[arr.index(item) - 1]
-                        bldg = arr[arr.index(item) - 2]
+                        if (item.find("HD") >= 0):
+                            room = arr[arr.index(item) - 1]
+                            bldg = arr[arr.index(item) - 2]
+                        elif (item.find("ite") >= 0):
+                            room = arr[arr.index(item) - 1]
+                            bldg = arr[arr.index(item) - 2]
+                        else:
+                            room = arr[arr.index(item) - 2]
+                            bldg = arr[arr.index(item) - 3]
                         ip = ""
                         roomType = ""
 
                         printable = set(string.printable)
-
                         bldg = ''.join([i if ord(i) < 128 else ' ' for i in bldg])
                         bldg = re.sub(' +',' ',bldg)
                         innerArr = bldg.split(' ')
                         bldg = innerArr[-1]
                         bldg = filter(lambda x: x in printable, bldg)
+
+                        print bldg
 
                         item = re.sub("0.0.0.0"," ",item)
                         innerarr = re.split(' ',item)
