@@ -106,15 +106,15 @@ for f in files:
 for host in hosts:
     entries.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=tcp " + host['ip'] + "")
 
-#entries = removeDupes(entries)
-
+entries = removeDupes(entries)
 entries = entries.sort()
+
 print(entries)
 
 for host in hosts:
     entries2.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=")
 
-#entries2 = removeDupes(entries2)
+entries2 = removeDupes(entries2)
 entries2 = entries2.sort()
 print (entries2)
 
