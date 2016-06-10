@@ -52,7 +52,7 @@ else:
             files.append(fName)
 
 if args.output:
-    out = output
+    out = args.output
 else:
     out = "ServiceCenterAddressBook.xadr"
 
