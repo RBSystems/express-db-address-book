@@ -39,9 +39,11 @@ def dedupe(seq):
     map(set.__setitem__, seq, [])
     return set.keys()
 
-entries = ['[Entries]','_AAASerial on COM1=usb','_Generic Cresnet Device Override=_Serial on COM1:cresnet 03;device GenericCrensetDevice','_Remote Console To CNet ID 03=_Serial on COM1:cresnet 03','_Serial on COM1=rs232 1,0,n,8,1,n,y','_USB=usb']
+entries_header = ['[Entries]','_AAASerial on COM1=usb','_Generic Cresnet Device Override=_Serial on COM1:cresnet 03;device GenericCrensetDevice','_Remote Console To CNet ID 03=_Serial on COM1:cresnet 03','_Serial on COM1=rs232 1,0,n,8,1,n,y','_USB=usb']
+entries = []
 
-entries2 = ['[Settings]','DefaultEntry=','[Comments]','_AAASerial on COM1=','_Generic Cresnet Device Override=','_Remote Console To CNet ID 03=','_Serial on COM1=','_USB=']
+entries2_header = ['[Settings]','DefaultEntry=','[Comments]','_AAASerial on COM1=','_Generic Cresnet Device Override=','_Remote Console To CNet ID 03=','_Serial on COM1=','_USB=']
+entries2 = []
 
 if args.db:
     files.append(args.db)
@@ -107,16 +109,19 @@ for host in hosts:
     entries.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=tcp " + host['ip'] + "")
 
 entries = removeDupes(entries)
-#entries = entries.sort()
+entries.sort()
 
-print(entries)
+for header in entries_header.reverse():
+    entries.insert(0,header)
 
 for host in hosts:
     entries2.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=")
 
 entries2 = removeDupes(entries2)
-#entries2 = entries2.sort()
-print (entries2)
+entries2.sort()
+for header in entries2_header.reverse():
+    entries2.insert(0,header)
+
 
 with open(out,'a') as addressBook:
     for entry in entries:
