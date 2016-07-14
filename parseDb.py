@@ -15,6 +15,7 @@ import argparse
 import os
 from os import listdir
 from os.path import isfile, join
+#import pdb
 import string
 import re
 
@@ -66,9 +67,7 @@ for f in files:
         for line in iter(a_data.splitlines()):
             host = {}
             if (line.find('10.') >= 0):
-                print (line)
                 arr = re.split(' ',line)
-                print arr
                 for item in arr:
                     room = ""
                     bldg = ""
@@ -92,9 +91,10 @@ for f in files:
                         bldg = innerArr[-1]
                         bldg = filter(lambda x: x in printable, bldg)
 
-                        print bldg
+                        #print bldg
 
-                        item = re.sub("0.0.0.0"," ",item)
+                        #pdb.set_trace()
+                        item = re.sub("0\.0\.0\.0"," ",item)
                         innerarr = re.split(' ',item)
                         for inneritem in innerarr:
                             if (inneritem.find('10.') >= 0):
@@ -113,11 +113,11 @@ for f in files:
                         host['roomType'] = roomType
                         host['ip'] = ip
                         hosts.append(host)
-
 #fileName = f + "_addressBook.xadr"
 for host in hosts:
     entries.append(host['bldg'] + " " + host['room'] + " " + host['roomType'] + "=tcp " + host['ip'] + "")
 
+#pdb.set_trace()
 entries = removeDupes(entries)
 entries.sort()
 entries_header.reverse()
